@@ -15,6 +15,10 @@ from colorama import Fore, Style
 
 pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
+with open("ram.json", "r") as f:
+    jdata = json.load(f)
+
+
 ATTACK = (101,962)
 ATTACK2 = (1418,705)
 WARMACHINE = (325,977)
@@ -37,7 +41,7 @@ CONFIRM_CLOSE_GAME = (957,586)
 OPEN_GAME = (1439,381)
 CLOSE_UMFRAGE = (1106,459)
 
-MODE = 2
+MODE = jdata["mode"]
 
 time.sleep(4)
 POS = (112,136)
@@ -63,7 +67,7 @@ def read_trophys(mode: int):
         print(Fore.RED + str(datetime.now())+ " | Failed to convert text to a number." + str(number_text)+" | MODE: "+str(mode))
         return None
 
-index = 0
+index = jdata["index"]
 index2 = 0
 if False:
     while True:
@@ -157,6 +161,11 @@ def long_running_function():
             if index2 > 7:
                 MODE = 1
                 index2 = 0
+        with open("ram.json", "w") as f:
+            json.dump({
+                "index": index,
+                "mode": MODE
+            }, f,indent=4)
 
 
 loop_thread = threading.Thread(target=long_running_function)
