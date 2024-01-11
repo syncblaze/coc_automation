@@ -1,4 +1,5 @@
 import datetime
+import os
 from datetime import datetime as dt
 import json
 
@@ -6,9 +7,20 @@ import matplotlib.pyplot as plt
 from collections import deque
 import time
 
+from discord_webhook import DiscordWebhook
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
 
+webhook = DiscordWebhook(
+    url=os.environ.get("DISCORD_WEBHOOK_URL"),
+    id="1195115391345766469",
+    avatar_url="https://cdn.synccord.com/logo.png",
+    username="Synccord on top",
+    content="Trophies and Mode Over Time using automated farming in clash of clans"
+)
+webhook.edit()
 while True:
     #get data from http://192.168.178.62:5000/data
     response = requests.get("http://192.168.178.62:5000/data?max_age=60")
@@ -81,6 +93,14 @@ while True:
     plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
 
     # Show the plot
-    plt.savefig('trophies_and_mode_plot.png', dpi=700)  # Adjust dpi as needed
+    plt.savefig('trophies_and_mode_plot.png', dpi=500)  # Adjust dpi as needed
+    webhook.remove_files()
+    webhook.add_file(file=open('trophies_and_mode_plot.png', 'rb').read(), filename='trophies_and_mode_plot.png')
+    webhook.set_content(
+        "Trophies and Mode Over Time using automated farming in clash of clans\n**Last updated:** " + str(
+            datetime.datetime.now().strftime("%H:%M")) + "\n"+
+        "**Current Trophies:** " + str(trophies[-1]) + "🏆"
+    )
+    webhook.edit()
     plt.show()
-    time.sleep(40)
+    time.sleep(90)
